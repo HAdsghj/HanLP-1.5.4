@@ -17,6 +17,7 @@ import com.hankcs.hanlp.corpus.occurrence.TermFrequency;
 import com.hankcs.hanlp.corpus.occurrence.TriaFrequency;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -29,7 +30,7 @@ public class DemoOccurrence
     public static void main(String[] args)
     {
         Occurrence occurrence = new Occurrence();
-        occurrence.addAll("在计算机音视频和图形图像技术等二维信息算法处理方面目前比较先进的视频处理算法");
+        occurrence.addAll(readFromProperties("json.properties","json","测试"));
         occurrence.compute();
 
         Set<Map.Entry<String, TermFrequency>> uniGram = occurrence.getUniGram();
@@ -54,5 +55,40 @@ public class DemoOccurrence
             if (triaFrequency.isRight())
                 System.out.println(triaFrequency);
         }
+    }
+
+    /**
+     * 从指定的配置文件里面根据指定的key读取value
+     * @param propertiesPath 配置文件地址
+     * @param key            key值
+     * @param defaultValue   如果该key没有找到，则返回的默认值
+     * @return value值
+     */
+    public static String readFromProperties(String propertiesPath, String key, String defaultValue) {
+
+        try {
+            Properties properties = new Properties();
+
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            if (loader == null)
+            {  // IKVM (v.0.44.0.5) doesn't set context classloader
+                loader = DemoOccurrence.class.getClassLoader();
+            }
+            properties.load(loader.getResourceAsStream(propertiesPath));
+
+
+
+
+//            InputStream in = DemoOccurrence.class.getResourceAsStream(json.properties);
+//            properties.load(in);
+//            in.close();
+            if (properties.containsKey(key)) {
+                return properties.getProperty(key);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return defaultValue;
+
     }
 }
